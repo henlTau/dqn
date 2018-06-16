@@ -20,7 +20,7 @@ from utils.gym import get_wrapper_by_name
 
 USE_CUDA = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
-
+PRINT_TIMES = False
 
 
 class Variable(autograd.Variable):
@@ -38,7 +38,8 @@ OptimizerSpec = namedtuple("OptimizerSpec", ["constructor", "kwargs"])
 
 Statistic = {
     "mean_episode_rewards": [],
-    "best_mean_episode_rewards": []
+    "best_mean_episode_rewards": [],
+    "running_times": []
 }
 
 def dqn_learing(
@@ -155,6 +156,9 @@ def dqn_learing(
     done = None
     info = None
     LOG_EVERY_N_STEPS = 10000
+    
+    startTime = time.time();
+    
     for t in count():
         """ Tsuf: ---- Stuff for debigging times for various places --- """
         T1=0
@@ -352,18 +356,20 @@ def dqn_learing(
 
         Statistic["mean_episode_rewards"].append(mean_episode_reward)
         Statistic["best_mean_episode_rewards"].append(best_mean_episode_reward)
+        Statistic["running_times"].append(int(time.time()-startTime))
 
         if t % LOG_EVERY_N_STEPS == 0 and t > learning_starts:
-            print("-----------------------")
-            print(T1)
-            print(T2)
-            print(T3)
-            print(T4)
-            print(T5)
-            print(T6)
-            print(T7)
-            print(T8)
-            print("-----------------------")
+            if (PRINT_TIMES):
+                print("-----------------------")
+                print(T1)
+                print(T2)
+                print(T3)
+                print(T4)
+                print(T5)
+                print(T6)
+                print(T7)
+                print(T8)
+                print("-----------------------")
             print("Timestep %d" % (t,))
             print("mean reward (100 episodes) %f" % mean_episode_reward)
             print("best mean reward %f" % best_mean_episode_reward)

@@ -12,8 +12,11 @@ class DQN(nn.Module):
             num_actions: number of action-value to output, one-to-one correspondence to action in game.
         """
         super(DQN, self).__init__()
+        # 4x84x84   ->   32x20x20
         self.conv1 = nn.Conv2d(in_channels, 32, kernel_size=8, stride=4)
+        # 32x20x20  ->   64x9x9
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
+        # 64x9x9    ->   64x7x7
         self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=1)
         self.fc4 = nn.Linear(7 * 7 * 64, 512)
         self.fc5 = nn.Linear(512, num_actions)
