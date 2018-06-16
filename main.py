@@ -6,7 +6,7 @@ from dqn_learn import OptimizerSpec, dqn_learing
 from utils.gym import get_env, get_wrapper_by_name
 from utils.schedule import LinearSchedule
 
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 GAMMA = 0.99
 REPLAY_BUFFER_SIZE = 1000000
 LEARNING_STARTS = 50000
@@ -58,5 +58,5 @@ if __name__ == '__main__':
     env = get_env(task, seed)
 
     #main(env, task.max_timesteps)
-    print(1)
+    print(2)
     main(env, 2000000)
