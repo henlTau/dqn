@@ -182,7 +182,7 @@ def dqn_learing(
         if stopping_criterion is not None and stopping_criterion(env):
             break
         
-        if (t>2000000):
+        if (t>1000000):
             break
         ### 2. Step the env and store the transition
         
