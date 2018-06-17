@@ -9,6 +9,7 @@ from itertools import count
 import random
 import gym.spaces
 import time
+import os
 
 import torch
 import torch.nn as nn
@@ -158,6 +159,22 @@ def dqn_learing(
     LOG_EVERY_N_STEPS = 10000
     
     startTime = time.time();
+    """ Tsuf: This accounts to saving the current variables in case of a break """
+    last_t = 0
+    if os.path.exists("last_t.pkl"):
+        cur_file = open('last_t.pkl','rb')
+        last_t = pickle.load(cur_file)
+        cur_file.close()
+        cur_file = open('replay_buffer.pkl','rb')
+        replay_buffer = pickle.load(cur_file)
+        cur_file.close()
+        cur_file = open('Qtag_net.pkl','rb')
+        Qtag = pickle.load(cur_file)
+        cur_file.close()
+        cur_file = open('Q_net.pkl','rb')
+        Q = pickle.load(cur_file)
+        cur_file.close()
+
     
     for t in count():
         """ Tsuf: ---- Stuff for debigging times for various places --- """
@@ -226,7 +243,7 @@ def dqn_learing(
 
         #take random action or use the net
         t2Tmp=time.time()
-        action = select_epilson_greedy_action(Q,next_input,t) #the returned action is on the CPU
+        action = select_epilson_greedy_action(Q,next_input,t+last_t) #the returned action is on the CPU
         T2+=time.time()-t2Tmp
 
 
@@ -255,8 +272,8 @@ def dqn_learing(
         # Note that this is only done if the replay buffer contains enough samples
         # for us to learn something useful -- until then, the model will not be
         # initialized and random actions should be taken
-        if (t > learning_starts and
-                t % learning_freq == 0 and
+        if (t+last_t > learning_starts and
+                t+last_t % learning_freq == 0 and
                 replay_buffer.can_sample(batch_size)):
             # Here, you should perform training. Training consists of four steps:
             # 3.a: use the replay buffer to sample a batch of transitions (see the
@@ -358,7 +375,7 @@ def dqn_learing(
         Statistic["best_mean_episode_rewards"].append(best_mean_episode_reward)
         Statistic["running_times"].append(int(time.time()-startTime))
 
-        if t % LOG_EVERY_N_STEPS == 0 and t > learning_starts:
+        if t+last_t % LOG_EVERY_N_STEPS == 0 and t+last_t > learning_starts:
             if (PRINT_TIMES):
                 print("-----------------------")
                 print(T1)
@@ -370,14 +387,30 @@ def dqn_learing(
                 print(T7)
                 print(T8)
                 print("-----------------------")
-            print("Timestep %d" % (t,))
+            print("Timestep %d" % (t+last_t,))
             print("mean reward (100 episodes) %f" % mean_episode_reward)
             print("best mean reward %f" % best_mean_episode_reward)
             print("episodes %d" % len(episode_rewards))
-            print("exploration %f" % exploration.value(t))
+            print("exploration %f" % exploration.value(t+last_t))
             sys.stdout.flush()
 
             # Dump statistics to pickle
             with open('statistics.pkl', 'wb') as f:
                 pickle.dump(Statistic, f)
                 print("Saved to %s" % 'statistics.pkl')
+			
+            with open('Q_net.pkl', 'wb') as f:
+                pickle.dump(Q, f)
+                print("Saved net to Q.pkl")
+			
+            with open('Qtag_net.pkl', 'wb') as f:
+                pickle.dump(Qtag, f)
+                print("Saved net to Qtag.pkl")
+				
+            with open('replay_buffer.pkl', 'wb') as f:
+                pickle.dump(replay_buffer, f)
+                print("Saved replay_buffer.pkl")
+                
+            with open('last_t.pkl', 'wb') as f:
+                pickle.dump(int(t+last_t), f)
+                print("Saved t to last_t.pkl")

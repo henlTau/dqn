@@ -57,6 +57,6 @@ if __name__ == '__main__':
     seed = 0 # Use a seed of zero (you may want to randomize the seed!)
     env = get_env(task, seed)
 
-    #main(env, task.max_timesteps)
     print(2)
-    main(env, 2000000)
+    main(env, task.max_timesteps)
+    
