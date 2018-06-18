@@ -1,7 +1,7 @@
 import gym
 import torch.optim as optim
 
-from dqn_model import DQN
+from dqn_model4 import DQN
 from dqn_learn import OptimizerSpec, dqn_learing
 from utils.gym import get_env, get_wrapper_by_name
 from utils.schedule import LinearSchedule
@@ -11,11 +11,11 @@ GAMMA = 0.99
 REPLAY_BUFFER_SIZE = 1000000
 LEARNING_STARTS = 50000
 LEARNING_FREQ = 4
-FRAME_HISTORY_LEN = 8
+FRAME_HISTORY_LEN = 4
 TARGER_UPDATE_FREQ = 10000
-LEARNING_RATE = 0.00025
-ALPHA = 0.95
-EPS = 0.01
+LEARNING_RATE = 0.003
+ALPHA = 0.99
+EPS = 1e-07
 
 def main(env, num_timesteps):
 
@@ -26,7 +26,7 @@ def main(env, num_timesteps):
 
     optimizer_spec = OptimizerSpec(
         constructor=optim.RMSprop,
-        kwargs=dict(lr=LEARNING_RATE, alpha=ALPHA, eps=EPS),
+        kwargs=dict(lr=LEARNING_RATE, alpha=ALPHA, eps=EPS, weight_decay=0, momentum=0.3, centered=False),
     )
 
     exploration_schedule = LinearSchedule(1000000, 0.1)
@@ -57,6 +57,6 @@ if __name__ == '__main__':
     seed = 0 # Use a seed of zero (you may want to randomize the seed!)
     env = get_env(task, seed)
     get_wrapper_by_name(env, "Monitor").video_callable = lambda episode_id: False
-    print(8)
+    print(14)
     main(env, task.max_timesteps)
     #main(env, 2000000)
