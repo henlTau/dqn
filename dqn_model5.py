@@ -17,7 +17,7 @@ class DQN(nn.Module):
         # 32x27x27  ->   64x13x13
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.fc4 = nn.Linear(13 * 13 * 64, 2704)
-		self.fc4 = nn.Linear(2704, 1352)
+        self.fc4 = nn.Linear(2704, 1352)
         self.fc5 = nn.Linear(1352, num_actions)
 
     def forward(self, x):
