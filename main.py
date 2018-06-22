@@ -58,7 +58,6 @@ if __name__ == '__main__':
     env = get_env(task, seed)
 	
 	get_wrapper_by_name(env, "Monitor").video_callable = lambda episode_id: False
-	print(20)
     main(env, task.max_timesteps)
 	
     
